@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/olivere/balancers"
+	"github.com/yezexuan/balancers"
 )
 
 func TestNewBalancer(t *testing.T) {

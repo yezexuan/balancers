@@ -87,3 +87,21 @@ func (b *Balancer) Connections() []balancers.Connection {
 	}
 	return conns
 }
+
+// ConnectionsFilter returns a list of connections by isBroke status.
+func (b *Balancer) ConnectionsFilter(isBroke bool) []balancers.Connection {
+	b.Lock()
+	defer b.Unlock()
+	conns := make([]balancers.Connection, len(b.conns))
+	for i, c := range b.conns {
+		if oc, ok := c.(*balancers.HttpConnection); ok {
+			if oc.IsBroken() == isBroke{
+				// Make a clone
+				cr := new(balancers.HttpConnection)
+				*cr = *oc
+				conns[i] = cr
+			}
+		}
+	}
+	return conns
+}
