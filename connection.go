@@ -18,6 +18,8 @@ type Connection interface {
 	URL() *url.URL
 	// IsBroken must return true if the connection to URL is currently not available.
 	IsBroken() bool
+	// SetBroken mark the connection as broken.
+	SetBroken()
 }
 
 // HttpConnection is a HTTP connection to a host.
@@ -81,8 +83,7 @@ func (c *HttpConnection) checkBroken() {
 	c.Lock()
 	defer c.Unlock()
 
-	// TODO(oe) Can we use HEAD?
-	req, err := http.NewRequest("GET", c.url.String(), nil)
+	req, err := http.NewRequest("HEAD", c.url.String(), nil)
 	if err != nil {
 		c.broken = true
 		return
@@ -90,8 +91,8 @@ func (c *HttpConnection) checkBroken() {
 	// Add UA to heartbeat requests.
 	req.Header.Add("User-Agent", UserAgent)
 
-	// Use a standard HTTP client with a timeout of 5 seconds.
-	cl := &http.Client{Timeout: 5 * time.Second}
+	// Use a standard HTTP client with a timeout of the seconds defined in ClientTimeOut.
+	cl := &http.Client{Timeout: ClientTimeOut * time.Second}
 	res, err := cl.Do(req)
 	if err == nil {
 		defer res.Body.Close()
@@ -113,4 +114,9 @@ func (c *HttpConnection) URL() *url.URL {
 // IsBroken returns true if the HTTP connection is currently broken.
 func (c *HttpConnection) IsBroken() bool {
 	return c.broken
+}
+
+// SetBroken mark the connection as broken.
+func (c *HttpConnection) SetBroken()  {
+	c.broken = true
 }

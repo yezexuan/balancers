@@ -41,6 +41,7 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	res, err := t.base().RoundTrip(rc)
 	if err != nil {
 		t.setModReq(r, nil)
+		conn.SetBroken()
 		return nil, err
 	}
 	res.Body = &onEOFReader{

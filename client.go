@@ -11,6 +11,9 @@ import (
 // (like round-robin) to load balance between several HTTP servers.
 func NewClient(b Balancer) *http.Client {
 	return &http.Client{
-		Transport: &Transport{balancer: b},
+		Transport: &Transport{
+			balancer: b,
+		},
+		Timeout:ClientTimeOut,
 	}
 }

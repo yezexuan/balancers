@@ -19,4 +19,6 @@ var (
 
 	// DefaultHeartbeatDuration is the default time between heartbeat messages.
 	DefaultHeartbeatDuration = 30 * time.Second
+
+	ClientTimeOut = 1 * time.Second
 )
